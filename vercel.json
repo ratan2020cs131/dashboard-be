@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "myproject/wsgi.py",
+      "src": "/myproject/wsgi.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.9",
@@ -17,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "myproject/wsgi.py"
+      "dest": "/myproject/wsgi.py"
     }
   ]
 }
