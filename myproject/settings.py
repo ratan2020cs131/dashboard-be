@@ -14,26 +14,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh','127.0.0.1']
 
-#uncomment this while developing in local
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'senarius',
-#         'USER': 'postgres',
-#         'PASSWORD': '123',
-#         'HOST': 'localhost',  
-#         'PORT': '5432',       
-#     }
-# }
-
-#comment this while developing in local
+# Database defenition
+DB_HOST=config('DB_HOST')
+DB_USER=config('DB_USER')
+DB_PASS=config('DB_PASS')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'senarius',
-        'USER': 'senarius_owner',
-        'PASSWORD': 'BSUi6bwdklc9',
-        'HOST': 'ep-damp-bread-a1x9zh8c.ap-southeast-1.aws.neon.tech',  
+        'USER': DB_USER,
+        'PASSWORD': DB_PASS,
+        'HOST': DB_HOST,  
         'PORT': '5432',       
     }
 }
