@@ -1,25 +1,33 @@
 from pathlib import Path
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATICFILES_DIRS = [BASE_DIR/'static',]
+STATICFILES_DIRS = [BASE_DIR / "static",]
 STATIC_ROOT = BASE_DIR/'staticfiles'
 
-
-# Quick-start development settings - unsuitable for production
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['.vercel.app', '.now.sh','127.0.0.1']
 
-# MongoDB configuration
-MONGO_URI = config('MONGO_URI')
-MONGO_DB_NAME = 'user_auth_db'  # Change to your desired database name
+# Database defenition
+DB_HOST=config('DB_HOST')
+DB_USER=config('DB_USER')
+DB_PASS=config('DB_PASS')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'senarius',
+        'USER': DB_USER,
+        'PASSWORD': DB_PASS,
+        'HOST': DB_HOST,  
+        'PORT': '5432',       
+    }
+}
 
 # Application definition
 INSTALLED_APPS = [
@@ -31,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'authapp',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -71,30 +79,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-# Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'utils.custom_serialize_error.custom_serialize_error',
+}
