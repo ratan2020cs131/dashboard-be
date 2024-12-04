@@ -2,13 +2,14 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
-from .serializers import SigninSerializer, VerifyUserSerializer
+from .serializers import SigninSerializer, VerifyUserSerializer, UserSerializer
 from django.views.decorators.csrf import csrf_exempt
 from .services import get_user_by_email
 from utils.generate_otp import generate_otp
 from utils.tokens import generate_session_token,decode_token, generate_access_token
 from utils.send_otp import send_otp_via_email
 import jwt
+from .decorators import authentication
 
 @csrf_exempt
 @api_view(['POST'])
@@ -68,3 +69,11 @@ def verify_user(request):
             )
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication
+def get_user(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response({'message': 'User found', 'user': serializer.data})
