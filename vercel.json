@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "if [ \"$VERCEL_GIT_BRANCH\" = \"main\" ]; then python manage.py makemigrations && python manage.py migrate; fi && vercel build",
   "builds": [
     {
       "src": "/myproject/wsgi.py",
