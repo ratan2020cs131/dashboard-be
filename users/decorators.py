@@ -32,13 +32,11 @@ def authorize_roles(allowed_roles):
         def wrapper(request, *args, **kwargs):
             # Ensure `request.user` is set by the `authentication` decorator
             user = getattr(request, 'user', None)
-            print(user.role)
             if not user or not hasattr(user, 'role'):
                 return Response({'message': 'User role not found or user not authenticated'}, status=status.HTTP_403_FORBIDDEN)
             
             # Check if user's role is in the allowed roles
             allowed_roles_values = [role.value for role in allowed_roles]
-            print(allowed_roles_values)
             if user.role not in allowed_roles_values:
                 return Response({'message': 'Forbidden: You do not have access to this resource'}, status=status.HTTP_403_FORBIDDEN)
             
