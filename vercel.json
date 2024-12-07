@@ -6,6 +6,7 @@
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.9",
+        "buildCommand": "if [ \"$VERCEL_GIT_BRANCH\" = \"main\" ]; then python manage.py makemigrations && python manage.py migrate; fi",
         "maxLambdaSize": "50mb"
       }
     }
