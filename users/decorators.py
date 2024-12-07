@@ -19,10 +19,29 @@ def authentication(view_func):
             return Response({'message': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
     
         user = get_user_by_email(email)
-        print(user)
         if not user:
             return Response({'message': 'User not found'}, status=404)
         request.user=user
         
         return view_func(request, *args, **kwargs)
     return wrapper
+
+def authorize_roles(allowed_roles):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            # Ensure `request.user` is set by the `authentication` decorator
+            user = getattr(request, 'user', None)
+            print(user.role)
+            if not user or not hasattr(user, 'role'):
+                return Response({'message': 'User role not found or user not authenticated'}, status=status.HTTP_403_FORBIDDEN)
+            
+            # Check if user's role is in the allowed roles
+            allowed_roles_values = [role.value for role in allowed_roles]
+            print(allowed_roles_values)
+            if user.role not in allowed_roles_values:
+                return Response({'message': 'Forbidden: You do not have access to this resource'}, status=status.HTTP_403_FORBIDDEN)
+            
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
