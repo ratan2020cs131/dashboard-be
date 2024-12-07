@@ -2,9 +2,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
-from .serializers import SigninSerializer, VerifyUserSerializer, UserSerializer
+from .serializers import SigninSerializer, VerifyUserSerializer, UserSerializer, UpdateRoleSerializer
 from django.views.decorators.csrf import csrf_exempt
-from .services import get_user_by_email
+from .services import get_user_by_email, update_user_role
 from utils.generate_otp import generate_otp
 from utils.tokens import generate_session_token,decode_token, generate_access_token
 from utils.send_otp import send_otp_via_email
@@ -77,3 +77,26 @@ def get_user(request):
     user = request.user
     serializer = UserSerializer(user)
     return Response({'message': 'User found', 'user': serializer.data})
+
+#update the role of the user
+@csrf_exempt
+@api_view(['PUT'])
+@authentication
+def update_role(request):
+    serializer = UpdateRoleSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    new_role = serializer.validated_data.get('role')
+    updated_user = update_user_role(request.user.id, new_role)
+    if not updated_user:
+        return Response(
+            {'message': 'User not found'}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
+    return Response(
+        {
+            'message': 'Role updated successfully',
+            'user': UserSerializer(updated_user).data
+        },
+        status=status.HTTP_200_OK
+    )

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import User
+from constants.roles import Roles
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,4 +30,18 @@ class VerifyUserSerializer(serializers.Serializer):
         if missing_fields:
             missing_fields_str = ' and '.join(missing_fields)
             raise serializers.ValidationError({"message": f"{missing_fields_str} missing"})
+        return super().to_internal_value(data)
+
+
+class UpdateRoleSerializer(serializers.Serializer):
+    role = serializers.CharField(required=True)
+
+    def to_internal_value(self, data):
+        if 'role' not in data:
+            raise serializers.ValidationError({"message": "role is missing"})
+        try:
+            Roles(data['role'])
+        except ValueError:
+            valid_roles = [role.value for role in Roles]
+            raise serializers.ValidationError({"message": f"Invalid role. Must be one of: {', '.join(valid_roles)}"})
         return super().to_internal_value(data)
