@@ -12,6 +12,7 @@ from constants.roles import Roles
 @authentication
 @authorize_roles([Roles.ADMIN, Roles.SUPERADMIN])
 def create_institute(request):
+    request.data['user'] = request.user.id
     serializer = InstituteSerializer(data=request.data)
     if serializer.is_valid():
         institute_code = serializer.validated_data.get('institute_code')
@@ -32,3 +33,25 @@ def create_institute(request):
             status=status.HTTP_201_CREATED
         )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@csrf_exempt
+@api_view(['GET'])
+@authentication
+@authorize_roles([Roles.ADMIN, Roles.SUPERADMIN])
+def get_institute(request):
+    try:
+        institute = Institute.objects.select_related('user').get(user=request.user.id)
+        serializer = InstituteSerializer(institute, context={'request': request})
+        return Response(
+            {
+                'message': 'Institute retrieved successfully',
+                'data': serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+    except Institute.DoesNotExist:
+        return Response(
+            {'message': 'Institute not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
