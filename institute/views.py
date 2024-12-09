@@ -24,7 +24,7 @@ def create_institute(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer.save()
+        serializer.save(user=request.user)
         return Response(
             {
                 'message': 'Institute created successfully',
