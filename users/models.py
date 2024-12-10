@@ -6,6 +6,7 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     otp = models.CharField(max_length=6, null=True, blank=True)
     is_approved = models.BooleanField(default=False)
+    onboarding = models.IntegerField(default=0)
     role = models.CharField(
         max_length=20,
         null=True,
